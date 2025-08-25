@@ -7,61 +7,32 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .nav-link {
-            transition: all 0.3s ease;
-        }
-        .nav-link.active {
-            background-color: #4f46e5;
-            color: white;
-        }
-        .screen {
-            display: none;
-        }
-        .screen.active {
-            display: block;
-        }
+        body { font-family: 'Inter', sans-serif; }
+        .nav-link { transition: all 0.3s ease; }
+        .nav-link.active { background-color: #4f46e5; color: white; }
+        .screen { display: none; }
+        .screen.active { display: block; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .screen.active {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        /* Stili per il Modal */
+        .screen.active { animation: fadeIn 0.5s ease-in-out; }
         .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 50;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s;
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.5); display: flex;
+            align-items: center; justify-content: center; z-index: 50;
+            opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s;
         }
-        .modal-overlay.visible {
-            opacity: 1;
-            visibility: visible;
-        }
+        .modal-overlay.visible { opacity: 1; visibility: visible; }
         .modal-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 0.5rem;
-            max-width: 500px;
-            width: 90%;
-            transform: scale(0.95);
+            background: white; padding: 2rem; border-radius: 0.5rem;
+            max-width: 500px; width: 90%; transform: scale(0.95);
             transition: transform 0.3s;
         }
-        .modal-overlay.visible .modal-content {
-            transform: scale(1);
-        }
+        .modal-overlay.visible .modal-content { transform: scale(1); }
+        /* Stile per il toggle di arrotondamento */
+        .toggle-checkbox:checked { right: 0; border-color: #4f46e5; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #4f46e5; }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -72,12 +43,8 @@
             <h1 class="text-4xl font-bold text-indigo-600">Gestione Spese Vacanza</h1>
             <p class="text-gray-500 mt-2">Dalle spese al saldo finale, in pochi click.</p>
             <div class="mt-6 flex justify-center gap-4">
-                <button onclick="document.getElementById('file-importer').click()" class="bg-green-600 text-white font-bold py-2 px-5 rounded-lg hover:bg-green-700 transition-colors">
-                    Importa Dati
-                </button>
-                <button onclick="exportData()" class="bg-blue-600 text-white font-bold py-2 px-5 rounded-lg hover:bg-blue-700 transition-colors">
-                    Esporta Dati
-                </button>
+                <button onclick="document.getElementById('file-importer').click()" class="bg-green-600 text-white font-bold py-2 px-5 rounded-lg hover:bg-green-700 transition-colors">Importa Dati</button>
+                <button onclick="exportData()" class="bg-blue-600 text-white font-bold py-2 px-5 rounded-lg hover:bg-blue-700 transition-colors">Esporta Dati</button>
                 <input type="file" id="file-importer" accept=".json" class="hidden" onchange="importData(event)">
             </div>
         </header>
@@ -105,6 +72,7 @@
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h2 class="text-2xl font-bold mb-4 text-indigo-700">Gruppi di Spesa</h2>
                     <form id="add-group-form" class="space-y-4 mb-6 border-b pb-6">
+                        <h3 class="text-lg font-semibold">Crea Nuovo Gruppo</h3>
                         <div>
                             <label for="group-name" class="block text-sm font-medium text-gray-700">Nome del nuovo gruppo</label>
                             <input type="text" id="group-name" placeholder="Es. Macchina di Nicola" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none" required>
@@ -142,13 +110,21 @@
             </div>
             <div id="screen-summary" class="screen">
                 <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h2 class="text-2xl font-bold mb-4 text-indigo-700">Riepilogo Conti</h2>
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-2xl font-bold text-indigo-700">Riepilogo Conti</h2>
+                        <div class="flex items-center">
+                            <label for="rounding-toggle" class="mr-3 text-sm font-medium text-gray-900">Arrotonda</label>
+                            <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                <input type="checkbox" name="toggle" id="rounding-toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" onchange="renderSummary()"/>
+                                <label for="rounding-toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                            </div>
+                        </div>
+                    </div>
                     <div id="summary-content" class="space-y-6"></div>
                      <div class="mt-6 p-4 bg-gray-50 rounded-lg">
                         <h4 class="font-bold text-gray-800">Come funziona questo calcolo?</h4>
                         <p class="text-sm text-gray-600 mt-2">
                             Questo riepilogo non è una magia, ma matematica precisa! L'algoritmo prima calcola il <strong>saldo totale</strong> di ogni persona, basandosi su quanto ha pagato e sulla sua quota di ogni spesa. Poi, per evitare un complicato giro di soldi, trova il <strong>percorso più breve e semplice</strong> per pareggiare i conti, riducendo al minimo il numero di pagamenti necessari.
-                            <br>Puoi fidarti: il risultato è esatto e garantisce che ognuno paghi solo per ciò che deve, nel modo più efficiente possibile.
                         </p>
                     </div>
                 </div>
@@ -156,18 +132,35 @@
         </main>
     </div>
 
-    <!-- Modal per saldare la quota -->
+    <!-- Modals -->
     <div id="settlement-modal" class="modal-overlay">
         <div class="modal-content">
             <h3 class="text-xl font-bold mb-4">Salda una quota</h3>
-            <p class="mb-4 text-gray-600">Seleziona la persona che ha già pagato la sua parte direttamente a chi ha offerto.</p>
-            <div id="settlement-members-list" class="space-y-2 mb-6">
-                <!-- Radio buttons verranno inseriti qui -->
-            </div>
-            <div class="flex justify-end gap-3">
-                <button onclick="closeSettlementModal()" class="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg hover:bg-gray-400">Annulla</button>
-                <button onclick="confirmSettlement()" class="bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700">Conferma</button>
-            </div>
+            <p class="mb-4 text-gray-600">Seleziona chi ha già pagato la sua parte direttamente a chi ha offerto.</p>
+            <div id="settlement-members-list" class="space-y-2 mb-6 max-h-60 overflow-y-auto"></div>
+            <div class="flex justify-end gap-3"><button onclick="closeModal('settlement-modal')" class="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg hover:bg-gray-400">Annulla</button><button onclick="confirmSettlement()" class="bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700">Conferma</button></div>
+        </div>
+    </div>
+    <div id="edit-transaction-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="text-xl font-bold mb-4">Modifica Transazione</h3>
+            <form id="edit-transaction-form" class="space-y-4">
+                <input type="text" id="edit-transaction-description" class="w-full p-3 border rounded-lg" required>
+                <input type="number" id="edit-transaction-amount" min="0.01" step="0.01" class="w-full p-3 border rounded-lg" required>
+                <select id="edit-transaction-paid-by" class="w-full p-3 border rounded-lg" required></select>
+                <select id="edit-transaction-group" class="w-full p-3 border rounded-lg" required></select>
+                <div class="flex justify-end gap-3"><button type="button" onclick="closeModal('edit-transaction-modal')" class="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg hover:bg-gray-400">Annulla</button><button type="submit" class="bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700">Salva Modifiche</button></div>
+            </form>
+        </div>
+    </div>
+    <div id="edit-group-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="text-xl font-bold mb-4">Modifica Gruppo</h3>
+            <form id="edit-group-form" class="space-y-4">
+                <input type="text" id="edit-group-name" class="w-full p-3 border rounded-lg" required>
+                <div id="edit-group-members-selection" class="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-60 overflow-y-auto"></div>
+                <div class="flex justify-end gap-3"><button type="button" onclick="closeModal('edit-group-modal')" class="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg hover:bg-gray-400">Annulla</button><button type="submit" class="bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700">Salva Modifiche</button></div>
+            </form>
         </div>
     </div>
 
@@ -179,6 +172,7 @@
             currentScreen: 'people'
         };
 
+        // --- Funzioni di Rendering Principali ---
         function render() {
             renderPeople();
             renderGroups();
@@ -187,21 +181,39 @@
             updateSelectors();
         }
 
+        function renderGroups() {
+            const list = document.getElementById('groups-list');
+            list.innerHTML = '';
+            state.groups.forEach(group => {
+                const div = document.createElement('div');
+                div.className = 'bg-gray-50 p-4 rounded-lg';
+                const buttons = !group.isDefault ? `
+                    <div class="flex gap-2">
+                        <button onclick="openEditGroupModal('${group.name}')" class="text-sm bg-yellow-100 text-yellow-800 font-semibold py-1 px-2 rounded-md hover:bg-yellow-200">Modifica</button>
+                        <button onclick="removeGroup('${group.name}')" class="text-sm bg-red-100 text-red-800 font-semibold py-1 px-2 rounded-md hover:bg-red-200">Rimuovi</button>
+                    </div>` : '';
+                div.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-800">${group.name} ${group.isDefault ? '<span class="text-sm font-normal text-indigo-600">(Default)</span>' : ''}</h3>
+                            <p class="text-gray-600 mt-1"><strong>Membri:</strong> ${group.members.join(', ')}</p>
+                        </div>
+                        ${buttons}
+                    </div>`;
+                list.appendChild(div);
+            });
+        }
+
         function renderTransactions() {
             const list = document.getElementById('transactions-list');
             list.innerHTML = '';
-            if (state.transactions.length === 0) {
-                list.innerHTML = '<p class="text-gray-500">Nessuna transazione registrata.</p>';
-            }
+            if (state.transactions.length === 0) list.innerHTML = '<p class="text-gray-500">Nessuna transazione registrata.</p>';
+            
             state.transactions.slice().reverse().forEach((tx, index) => {
                 const originalIndex = state.transactions.length - 1 - index;
                 const div = document.createElement('div');
                 div.className = 'bg-gray-50 p-3 rounded-lg';
-                
-                let settledHtml = '';
-                if (tx.exclusions && tx.exclusions.length > 0) {
-                    settledHtml = `<p class="text-xs text-green-600 mt-1"><strong>Quote saldate:</strong> ${tx.exclusions.join(', ')}</p>`;
-                }
+                let settledHtml = (tx.exclusions && tx.exclusions.length > 0) ? `<p class="text-xs text-green-600 mt-1"><strong>Quote saldate:</strong> ${tx.exclusions.join(', ')}</p>` : '';
 
                 div.innerHTML = `
                     <div class="flex justify-between items-start">
@@ -211,11 +223,11 @@
                             ${settledHtml}
                         </div>
                         <div class="flex gap-2 flex-shrink-0 ml-2">
-                             <button onclick="openSettlementModal(${originalIndex})" class="text-sm bg-green-100 text-green-800 font-semibold py-1 px-2 rounded-md hover:bg-green-200">Quota già saldata da...</button>
-                            <button onclick="removeTransaction(${originalIndex})" class="text-sm bg-red-100 text-red-800 font-semibold py-1 px-2 rounded-md hover:bg-red-200">Rimuovi</button>
+                            <button onclick="openSettlementModal(${originalIndex})" class="text-sm bg-green-100 text-green-800 font-semibold py-1 px-2 rounded-md hover:bg-green-200">Quota già saldata da...</button>
+                            <button onclick="openEditTransactionModal(${originalIndex})" title="Modifica" class="bg-blue-100 py-1 px-2 rounded-md hover:bg-blue-200 text-yellow-800 hover:text-yellow-600">✏️</button>
+                            <button onclick="removeTransaction(${originalIndex})" class="text-sm bg-red-100 text-red-800 font-semibold py-1 px-2 rounded-md hover:bg-red-200">🗑️</button>
                         </div>
-                    </div>
-                `;
+                    </div>`;
                 list.appendChild(div);
             });
         }
@@ -223,7 +235,7 @@
         function renderSummary() {
             const content = document.getElementById('summary-content');
             content.innerHTML = '';
-
+            
             if (state.people.length < 2) {
                 content.innerHTML = '<p class="text-gray-500">Aggiungi almeno due persone per calcolare i saldi.</p>';
                 return;
@@ -270,26 +282,20 @@
 
             const debtors = Object.entries(balances).filter(([,b]) => b < 0).map(([p, b]) => ({person: p, amount: b}));
             const creditors = Object.entries(balances).filter(([,b]) => b > 0).map(([p, b]) => ({person: p, amount: b}));
-            
             const settlements = [];
 
             while (debtors.length > 0 && creditors.length > 0) {
                 debtors.sort((a, b) => a.amount - b.amount);
                 creditors.sort((a, b) => b.amount - a.amount);
-
                 const debtor = debtors[0];
                 const creditor = creditors[0];
                 const amountToTransfer = Math.min(-debtor.amount, creditor.amount);
-
                 if (amountToTransfer < 0.01) { debtors.shift(); continue; }
-
                 settlements.push({ from: debtor.person, to: creditor.person, amount: amountToTransfer });
-
                 debtor.amount += amountToTransfer;
                 creditor.amount -= amountToTransfer;
-
-                if (Math.abs(debtor.amount) < 0.01) { debtors.shift(); }
-                if (Math.abs(creditor.amount) < 0.01) { creditors.shift(); }
+                if (Math.abs(debtor.amount) < 0.01) debtors.shift();
+                if (Math.abs(creditor.amount) < 0.01) creditors.shift();
             }
             
             const settlementsDiv = document.createElement('div');
@@ -297,102 +303,133 @@
             if (settlements.length === 0) {
                 settlementsDiv.innerHTML += '<p class="text-gray-500">Tutti i conti sono in pari!</p>';
             } else {
+                const round = document.getElementById('rounding-toggle').checked;
+                const roundFn = num => Math.round(num * 2) / 2; // Arrotonda al più vicino 0.50
                 const settlementsList = document.createElement('div');
                 settlementsList.className = 'space-y-3';
                 settlements.forEach(s => {
+                    const amount = round ? roundFn(s.amount) : s.amount;
+                    if (amount < 0.01) return;
                     const paymentDiv = document.createElement('div');
                     paymentDiv.className = 'bg-indigo-50 p-4 rounded-lg flex items-center gap-4';
                     paymentDiv.innerHTML = `
-                        <div class="text-lg font-bold text-indigo-600">
-                            <span class="font-normal text-gray-800">${s.from}</span> &rarr; <span class="font-normal text-gray-800">${s.to}</span>
-                        </div>
-                        <div class="ml-auto text-xl font-bold text-indigo-800">${s.amount.toFixed(2)} €</div>
-                    `;
+                        <div class="text-lg font-bold text-indigo-600"><span class="font-normal text-gray-800">${s.from}</span> &rarr; <span class="font-normal text-gray-800">${s.to}</span></div>
+                        <div class="ml-auto text-xl font-bold text-indigo-800">${amount.toFixed(2)} €</div>`;
                     settlementsList.appendChild(paymentDiv);
                 });
                 settlementsDiv.appendChild(settlementsList);
             }
             content.appendChild(settlementsDiv);
         }
-        
-        document.getElementById('add-transaction-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const description = document.getElementById('transaction-description').value.trim();
-            const amount = parseFloat(document.getElementById('transaction-amount').value);
-            const paidBy = document.getElementById('transaction-paid-by').value;
-            const groupName = document.getElementById('transaction-group').value;
 
-            if (description && amount > 0 && paidBy && groupName) {
-                state.transactions.push({ description, amount, paidBy, groupName, exclusions: [] });
-                e.target.reset();
-                render();
-            } else {
-                alert('Per favore, compila tutti i campi correttamente.');
-            }
-        });
+        // --- Gestione Modals ---
+        function openModal(modalId) { document.getElementById(modalId).classList.add('visible'); }
+        function closeModal(modalId) { document.getElementById(modalId).classList.remove('visible'); }
 
-        // --- Funzioni Modal ---
-        const settlementModal = document.getElementById('settlement-modal');
-        
         function openSettlementModal(txIndex) {
             const tx = state.transactions[txIndex];
             const group = state.groups.find(g => g.name === tx.groupName);
             if (!group) return;
-
             const membersList = document.getElementById('settlement-members-list');
             membersList.innerHTML = '';
-            
             const potentialSettlers = group.members.filter(m => m !== tx.paidBy && !(tx.exclusions || []).includes(m));
-
             if (potentialSettlers.length === 0) {
                 alert('Tutte le quote per questa transazione sono già state saldate o non ci sono altri membri nel gruppo.');
                 return;
             }
-
             potentialSettlers.forEach(member => {
                 const div = document.createElement('div');
-                div.className = 'flex items-center';
-                div.innerHTML = `
-                    <input type="radio" id="settler-${member}" name="settler" value="${member}" class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
-                    <label for="settler-${member}" class="ml-3 block text-sm font-medium text-gray-700">${member}</label>
-                `;
+                div.innerHTML = `<label class="flex items-center"><input type="checkbox" name="settler" value="${member}" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"><span class="ml-3 text-sm font-medium text-gray-700">${member}</span></label>`;
                 membersList.appendChild(div);
             });
-            
-            settlementModal.dataset.txIndex = txIndex;
-            settlementModal.classList.add('visible');
-        }
-
-        function closeSettlementModal() {
-            settlementModal.classList.remove('visible');
+            document.getElementById('settlement-modal').dataset.txIndex = txIndex;
+            openModal('settlement-modal');
         }
 
         function confirmSettlement() {
-            const txIndex = settlementModal.dataset.txIndex;
-            const selectedSettler = document.querySelector('input[name="settler"]:checked');
-
-            if (!selectedSettler) {
-                alert('Per favore, seleziona una persona.');
-                return;
-            }
-
-            const person = selectedSettler.value;
+            const txIndex = document.getElementById('settlement-modal').dataset.txIndex;
+            const selectedSettlers = document.querySelectorAll('input[name="settler"]:checked');
+            if (selectedSettlers.length === 0) { alert('Per favore, seleziona almeno una persona.'); return; }
             const tx = state.transactions[txIndex];
-            
-            if (!tx.exclusions) {
-                tx.exclusions = [];
-            }
-            tx.exclusions.push(person);
-
-            closeSettlementModal();
+            if (!tx.exclusions) tx.exclusions = [];
+            selectedSettlers.forEach(checkbox => {
+                if (!tx.exclusions.includes(checkbox.value)) tx.exclusions.push(checkbox.value);
+            });
+            closeModal('settlement-modal');
             render();
         }
 
-        // --- Funzioni esistenti (non modificate o con piccole modifiche) ---
+        function openEditTransactionModal(txIndex) {
+            const tx = state.transactions[txIndex];
+            document.getElementById('edit-transaction-description').value = tx.description;
+            document.getElementById('edit-transaction-amount').value = tx.amount;
+            document.getElementById('edit-transaction-paid-by').value = tx.paidBy;
+            document.getElementById('edit-transaction-group').value = tx.groupName;
+            document.getElementById('edit-transaction-modal').dataset.txIndex = txIndex;
+            openModal('edit-transaction-modal');
+        }
+        
+        document.getElementById('edit-transaction-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const txIndex = e.target.closest('.modal-overlay').dataset.txIndex;
+            const tx = state.transactions[txIndex];
+            tx.description = document.getElementById('edit-transaction-description').value.trim();
+            tx.amount = parseFloat(document.getElementById('edit-transaction-amount').value);
+            tx.paidBy = document.getElementById('edit-transaction-paid-by').value;
+            tx.groupName = document.getElementById('edit-transaction-group').value;
+            closeModal('edit-transaction-modal');
+            render();
+        });
+        
+        function openEditGroupModal(groupName) {
+            const group = state.groups.find(g => g.name === groupName);
+            if (!group) return;
+            document.getElementById('edit-group-name').value = group.name;
+            const membersContainer = document.getElementById('edit-group-members-selection');
+            membersContainer.innerHTML = '';
+            state.people.forEach(person => {
+                const isChecked = group.members.includes(person);
+                const div = document.createElement('div');
+                div.innerHTML = `<label class="flex items-center"><input type="checkbox" name="edit-group-members" value="${person}" ${isChecked ? 'checked' : ''} class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"><span class="ml-2 text-sm">${person}</span></label>`;
+                membersContainer.appendChild(div);
+            });
+            document.getElementById('edit-group-modal').dataset.originalGroupName = groupName;
+            openModal('edit-group-modal');
+        }
+
+        document.getElementById('edit-group-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const originalName = e.target.closest('.modal-overlay').dataset.originalGroupName;
+            const newName = document.getElementById('edit-group-name').value.trim();
+            const selectedMembers = Array.from(document.querySelectorAll('input[name="edit-group-members"]:checked')).map(cb => cb.value);
+            
+            if (!newName || selectedMembers.length === 0) {
+                alert('Il nome del gruppo non può essere vuoto e deve avere almeno un membro.');
+                return;
+            }
+            // Controlla se il nuovo nome esiste già (e non è lo stesso nome originale)
+            if (newName !== originalName && state.groups.some(g => g.name === newName)) {
+                alert('Un gruppo con questo nome esiste già.');
+                return;
+            }
+
+            const group = state.groups.find(g => g.name === originalName);
+            group.name = newName;
+            group.members = selectedMembers;
+            // Aggiorna il nome del gruppo in tutte le transazioni
+            state.transactions.forEach(tx => {
+                if (tx.groupName === originalName) tx.groupName = newName;
+            });
+
+            closeModal('edit-group-modal');
+            render();
+        });
+
+        // --- Funzioni di base (gestione stato, etc.) ---
         function renderPeople() {
             const list = document.getElementById('people-list');
             list.innerHTML = '';
-            if (state.people.length === 0) { list.innerHTML = '<p class="text-gray-500">Nessuna persona aggiunta. Inizia da qui!</p>'; }
+            if (state.people.length === 0) { list.innerHTML = '<p class="text-gray-500">Nessuna persona aggiunta.</p>'; }
             state.people.forEach(person => {
                 const div = document.createElement('div');
                 div.className = 'flex justify-between items-center bg-gray-50 p-3 rounded-lg';
@@ -400,46 +437,34 @@
                 list.appendChild(div);
             });
         }
-        function renderGroups() {
-            const list = document.getElementById('groups-list');
-            list.innerHTML = '';
-            state.groups.forEach(group => {
-                const div = document.createElement('div');
-                div.className = 'bg-gray-50 p-4 rounded-lg';
-                div.innerHTML = `
-                    <div class="flex justify-between items-start">
-                        <h3 class="text-lg font-bold text-gray-800">${group.name} ${group.isDefault ? '<span class="text-sm font-normal text-indigo-600">(Default)</span>' : ''}</h3>
-                        ${!group.isDefault ? `<button onclick="removeGroup('${group.name}')" class="text-red-500 hover:text-red-700 font-semibold">Rimuovi</button>` : ''}
-                    </div>
-                    <p class="text-gray-600 mt-2"><strong>Membri:</strong> ${group.members.join(', ')}</p>`;
-                list.appendChild(div);
-            });
-        }
         function updateSelectors() {
-            const membersSelection = document.getElementById('group-members-selection');
-            membersSelection.innerHTML = '';
+            const createGroupMembers = document.getElementById('group-members-selection');
+            createGroupMembers.innerHTML = '';
             state.people.forEach(person => {
                 const div = document.createElement('div');
-                div.className = 'flex items-center';
-                div.innerHTML = `<input type="checkbox" id="member-${person}" name="group-members" value="${person}" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"><label for="member-${person}" class="ml-2 block text-sm text-gray-900">${person}</label>`;
-                membersSelection.appendChild(div);
+                div.innerHTML = `<label class="flex items-center"><input type="checkbox" name="group-members" value="${person}" class="h-4 w-4 text-indigo-600 rounded"><span class="ml-2 text-sm">${person}</span></label>`;
+                createGroupMembers.appendChild(div);
             });
-            const paidBySelect = document.getElementById('transaction-paid-by');
-            const groupSelect = document.getElementById('transaction-group');
-            paidBySelect.innerHTML = '<option value="" disabled selected>Chi ha pagato?</option>';
-            groupSelect.innerHTML = '';
-            state.people.forEach(person => { paidBySelect.innerHTML += `<option value="${person}">${person}</option>`; });
-            state.groups.forEach(group => { groupSelect.innerHTML += `<option value="${group.name}">${group.name}</option>`; });
+            
+            const paidBySelects = [document.getElementById('transaction-paid-by'), document.getElementById('edit-transaction-paid-by')];
+            const groupSelects = [document.getElementById('transaction-group'), document.getElementById('edit-transaction-group')];
+            
+            paidBySelects.forEach(select => {
+                select.innerHTML = '<option value="" disabled selected>Chi ha pagato?</option>';
+                state.people.forEach(p => { select.innerHTML += `<option value="${p}">${p}</option>`; });
+            });
+            groupSelects.forEach(select => {
+                select.innerHTML = '';
+                state.groups.forEach(g => { select.innerHTML += `<option value="${g.name}">${g.name}</option>`; });
+            });
         }
         document.getElementById('add-person-form').addEventListener('submit', (e) => {
             e.preventDefault();
-            const input = document.getElementById('person-name');
-            const name = input.value.trim();
+            const name = document.getElementById('person-name').value.trim();
             if (name && !state.people.includes(name)) {
                 state.people.push(name);
-                const defaultGroup = state.groups.find(g => g.isDefault);
-                if (defaultGroup) { defaultGroup.members.push(name); }
-                input.value = '';
+                state.groups.find(g => g.isDefault).members.push(name);
+                document.getElementById('person-name').value = '';
                 render();
             } else if (state.people.includes(name)) { alert('Questa persona esiste già.'); }
         });
@@ -448,26 +473,20 @@
                 state.people = state.people.filter(p => p !== name);
                 state.groups.forEach(g => { g.members = g.members.filter(m => m !== name); });
                 state.transactions = state.transactions.filter(tx => tx.paidBy !== name);
-                // Rimuovi anche dalle esclusioni
-                state.transactions.forEach(tx => {
-                    if (tx.exclusions) {
-                        tx.exclusions = tx.exclusions.filter(ex => ex !== name);
-                    }
-                });
+                state.transactions.forEach(tx => { if (tx.exclusions) tx.exclusions = tx.exclusions.filter(ex => ex !== name); });
                 render();
             }
         }
         document.getElementById('add-group-form').addEventListener('submit', (e) => {
             e.preventDefault();
-            const input = document.getElementById('group-name');
-            const name = input.value.trim();
-            const selectedMembers = Array.from(document.querySelectorAll('input[name="group-members"]:checked')).map(cb => cb.value);
-            if (name && !state.groups.some(g => g.name === name) && selectedMembers.length > 0) {
-                state.groups.push({ name, members: selectedMembers, isDefault: false });
-                input.value = '';
-                document.querySelectorAll('input[name="group-members"]').forEach(cb => cb.checked = false);
+            const name = document.getElementById('group-name').value.trim();
+            const members = Array.from(document.querySelectorAll('input[name="group-members"]:checked')).map(cb => cb.value);
+            if (name && !state.groups.some(g => g.name === name) && members.length > 0) {
+                state.groups.push({ name, members, isDefault: false });
+                e.target.reset();
                 render();
-            } else if (state.groups.some(g => g.name === name)) { alert('Un gruppo con questo nome esiste già.'); } else if (selectedMembers.length === 0) { alert('Seleziona almeno un membro per il gruppo.'); }
+            } else if (state.groups.some(g => g.name === name)) { alert('Un gruppo con questo nome esiste già.'); } 
+            else if (members.length === 0) { alert('Seleziona almeno un membro.'); }
         });
         function removeGroup(name) {
             if (confirm(`Sei sicuro di voler rimuovere il gruppo "${name}"? Le transazioni associate verranno eliminate.`)) {
@@ -476,6 +495,18 @@
                 render();
             }
         }
+        document.getElementById('add-transaction-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const description = document.getElementById('transaction-description').value.trim();
+            const amount = parseFloat(document.getElementById('transaction-amount').value);
+            const paidBy = document.getElementById('transaction-paid-by').value;
+            const groupName = document.getElementById('transaction-group').value;
+            if (description && amount > 0 && paidBy && groupName) {
+                state.transactions.push({ description, amount, paidBy, groupName, exclusions: [] });
+                e.target.reset();
+                render();
+            } else { alert('Compila tutti i campi correttamente.'); }
+        });
         function removeTransaction(index) {
             if (confirm('Sei sicuro di voler rimuovere questa transazione?')) {
                 state.transactions.splice(index, 1);
@@ -483,7 +514,6 @@
             }
         }
         function showScreen(screenName) {
-            state.currentScreen = screenName;
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(`screen-${screenName}`).classList.add('active');
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
@@ -491,42 +521,34 @@
         }
         function exportData() {
             const dataStr = JSON.stringify(state, null, 2);
-            const dataBlob = new Blob([dataStr], {type: "application/json"});
-            const url = URL.createObjectURL(dataBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'dati_vacanza.json';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            const blob = new Blob([dataStr], {type: "application/json"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'dati_vacanza.json';
+            a.click();
             URL.revokeObjectURL(url);
         }
         function importData(event) {
             const file = event.target.files[0];
-            if (!file) { return; }
+            if (!file) return;
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = e => {
                 try {
-                    const importedData = JSON.parse(e.target.result);
-                    if (importedData.people && importedData.groups && importedData.transactions) {
-                        if (confirm('Sei sicuro di voler importare questi dati? I dati attuali verranno sovrascritti.')) {
-                            state = importedData;
+                    const data = JSON.parse(e.target.result);
+                    if (data.people && data.groups && data.transactions) {
+                        if (confirm('Importando i dati sovrascriverai quelli attuali. Continuare?')) {
+                            state = data;
                             render();
                             showScreen('people');
                         }
-                    } else { alert('Il file non sembra essere valido.'); }
-                } catch (error) {
-                    alert('Errore durante la lettura del file. Assicurati che sia un file JSON valido.');
-                    console.error("Errore di parsing JSON:", error);
-                }
+                    } else { alert('File non valido.'); }
+                } catch (err) { alert('Errore nella lettura del file.'); }
             };
             reader.readAsText(file);
             event.target.value = null;
         }
-        window.onload = () => {
-            showScreen('people');
-            render();
-        };
+        window.onload = () => { showScreen('people'); render(); };
     </script>
 </body>
 </html>
