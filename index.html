@@ -211,7 +211,10 @@
                 list.appendChild(div);
             });
         }
-        
+
+        /*
+
+        */
         function renderSummary() {
             const content = document.getElementById('summary-content');
             content.innerHTML = '';
@@ -257,6 +260,26 @@
             balancesDiv.appendChild(balancesList);
             content.appendChild(balancesDiv);
 
+            /*
+            Passaggio 2: Semplificare i Pagamenti (L'Algoritmo Intelligente)
+            
+            Ora abbiamo una lista di persone che devono dare soldi (i debitori, con saldo negativo) e una lista di persone che devono riceverne (i creditori, con saldo positivo).
+
+            Sarebbe complicato se ogni debitore dovesse pagare un pezzetto a ogni creditore. L'algoritmo, invece, trova il minor numero di pagamenti necessari per pareggiare i conti. Ecco come fa:
+
+            1. Crea due liste: una per i debitori e una per i creditori.
+
+            2. Inizia un ciclo: finché ci sono ancora persone in entrambe le liste, l'algoritmo:
+                - Prende il debitore che deve di più (es. Anna, -50 €) e il creditore che deve ricevere di più (es. Luca, +70 €).
+                - Calcola l'importo da trasferire, che è il valore più piccolo tra il debito e il credito. In questo caso, 50 €.
+                - Registra il pagamento: "Anna deve dare 50 € a Luca".
+                - Aggiorna i saldi: il debito di Anna diventa 0 € (-50 + 50) e il credito di Luca si riduce a +20 € (+70 - 50).
+                - Rimuove chi è a posto: Anna ha saldato il suo debito, quindi viene tolta dalla lista dei debitori. Luca deve ancora ricevere soldi, quindi rimane nella sua lista.
+
+            3. Ripete il ciclo: ora l'algoritmo prenderà il prossimo debitore più grande e lo farà pagare a Luca (che è ancora il creditore più grande) o a chiunque altro debba ricevere di più, e così via, finché una delle due liste non è vuota.
+
+            */
+
             const debtors = Object.entries(balances).filter(([,b]) => b < 0).map(([p, b]) => ({person: p, amount: b}));
             const creditors = Object.entries(balances).filter(([,b]) => b > 0).map(([p, b]) => ({person: p, amount: b}));
             
@@ -298,6 +321,7 @@
             if (settlements.length === 0) {
                 settlementsDiv.innerHTML += '<p class="text-gray-500">Tutti i conti sono in pari!</p>';
             } else {
+                settlementsDiv.innerHTML += '<p class="text-gray-500">Ottenuta la lista di chi deve ricevere soldi (creditori) e chi deve darne (debitori), un algoritmo intelligente calcola il minor numero di pagamenti necessari per saldare tutti i debiti, abbinando chi deve di più a chi deve ricevere di più, così da risolvere tutto nel modo più rapido e semplice.</p><br>';
                 const settlementsList = document.createElement('div');
                 settlementsList.className = 'space-y-3';
                 settlements.forEach(s => {
