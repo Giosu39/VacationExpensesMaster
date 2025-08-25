@@ -23,7 +23,6 @@
         .screen.active {
             display: block;
         }
-        /* Stile per animazione di entrata */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -31,17 +30,47 @@
         .screen.active {
             animation: fadeIn 0.5s ease-in-out;
         }
+        /* Stili per il Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .modal-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            max-width: 500px;
+            width: 90%;
+            transform: scale(0.95);
+            transition: transform 0.3s;
+        }
+        .modal-overlay.visible .modal-content {
+            transform: scale(1);
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
 
     <div class="container mx-auto max-w-4xl p-4">
 
-        <!-- Titolo e Controlli Dati -->
         <header class="text-center my-6">
             <h1 class="text-4xl font-bold text-indigo-600">Gestione Spese Vacanza</h1>
-            <p class="text-gray-500 mt-2">Un modo semplice per tenere traccia di chi ha pagato cosa.</p>
-            <!-- Sezione Import/Export -->
+            <p class="text-gray-500 mt-2">Dalle spese al saldo finale, in pochi click.</p>
             <div class="mt-6 flex justify-center gap-4">
                 <button onclick="document.getElementById('file-importer').click()" class="bg-green-600 text-white font-bold py-2 px-5 rounded-lg hover:bg-green-700 transition-colors">
                     Importa Dati
@@ -53,16 +82,15 @@
             </div>
         </header>
 
-        <!-- Navigazione -->
         <nav class="bg-white rounded-lg shadow-md p-2 flex justify-around mb-8 sticky top-4 z-10">
             <button onclick="showScreen('people')" id="nav-people" class="nav-link flex-1 text-center py-3 px-4 rounded-md font-semibold text-gray-600 hover:bg-indigo-100">Persone</button>
-            <button onclick="showScreen('groups')" id="nav-groups" class="nav-link flex-1 text-center py-3 px-4 rounded-md font-semibold text-gray-600 hover:bg-indigo-100">Gruppi</button>
+            <button onclick="showScreen('groups')" id="nav-groups" class="nav-link flex-1 text-center py-3 px-4 rounded-md font-semibold text-gray-600 hover:bg-indigo-100">Gruppi di spesa</button>
             <button onclick="showScreen('transactions')" id="nav-transactions" class="nav-link flex-1 text-center py-3 px-4 rounded-md font-semibold text-gray-600 hover:bg-indigo-100">Transazioni</button>
             <button onclick="showScreen('summary')" id="nav-summary" class="nav-link flex-1 text-center py-3 px-4 rounded-md font-semibold text-gray-600 hover:bg-indigo-100">Riepilogo</button>
         </nav>
 
         <main>
-            <!-- Schermata Persone -->
+            <!-- Schermate -->
             <div id="screen-people" class="screen">
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h2 class="text-2xl font-bold mb-4 text-indigo-700">Partecipanti</h2>
@@ -70,13 +98,9 @@
                         <input type="text" id="person-name" placeholder="Nome persona" class="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none" required>
                         <button type="submit" class="bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-700 transition-colors">Aggiungi</button>
                     </form>
-                    <div id="people-list" class="space-y-3">
-                        <!-- Lista persone verrà inserita qui dinamicamente -->
-                    </div>
+                    <div id="people-list" class="space-y-3"></div>
                 </div>
             </div>
-
-            <!-- Schermata Gruppi di Spesa -->
             <div id="screen-groups" class="screen">
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h2 class="text-2xl font-bold mb-4 text-indigo-700">Gruppi di Spesa</h2>
@@ -87,19 +111,13 @@
                         </div>
                         <div>
                             <p class="block text-sm font-medium text-gray-700 mb-2">Seleziona membri</p>
-                            <div id="group-members-selection" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                <!-- Checkbox persone verranno inserite qui -->
-                            </div>
+                            <div id="group-members-selection" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
                         </div>
                         <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-700 transition-colors">Crea Gruppo</button>
                     </form>
-                    <div id="groups-list" class="space-y-4">
-                        <!-- Lista gruppi verrà inserita qui -->
-                    </div>
+                    <div id="groups-list" class="space-y-4"></div>
                 </div>
             </div>
-
-            <!-- Schermata Transazioni -->
             <div id="screen-transactions" class="screen">
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h2 class="text-2xl font-bold mb-4 text-indigo-700">Aggiungi Transazione</h2>
@@ -119,37 +137,48 @@
                         <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-700 transition-colors">Aggiungi Spesa</button>
                     </form>
                     <h3 class="text-xl font-bold mt-8 mb-4 border-t pt-6">Elenco Spese</h3>
-                    <div id="transactions-list" class="space-y-3">
-                        <!-- Lista transazioni verrà inserita qui -->
-                    </div>
+                    <div id="transactions-list" class="space-y-3"></div>
                 </div>
             </div>
-
-            <!-- Schermata Riepilogo -->
             <div id="screen-summary" class="screen">
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h2 class="text-2xl font-bold mb-4 text-indigo-700">Riepilogo Conti</h2>
-                    <div id="summary-content" class="space-y-6">
-                        <!-- Riepilogo verrà inserito qui -->
+                    <div id="summary-content" class="space-y-6"></div>
+                     <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                        <h4 class="font-bold text-gray-800">Come funziona questo calcolo?</h4>
+                        <p class="text-sm text-gray-600 mt-2">
+                            Questo riepilogo non è una magia, ma matematica precisa! L'algoritmo prima calcola il <strong>saldo totale</strong> di ogni persona, basandosi su quanto ha pagato e sulla sua quota di ogni spesa. Poi, per evitare un complicato giro di soldi, trova il <strong>percorso più breve e semplice</strong> per pareggiare i conti, riducendo al minimo il numero di pagamenti necessari.
+                            <br>Puoi fidarti: il risultato è esatto e garantisce che ognuno paghi solo per ciò che deve, nel modo più efficiente possibile.
+                        </p>
                     </div>
                 </div>
             </div>
         </main>
+    </div>
 
+    <!-- Modal per saldare la quota -->
+    <div id="settlement-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="text-xl font-bold mb-4">Salda una quota</h3>
+            <p class="mb-4 text-gray-600">Seleziona la persona che ha già pagato la sua parte direttamente a chi ha offerto.</p>
+            <div id="settlement-members-list" class="space-y-2 mb-6">
+                <!-- Radio buttons verranno inseriti qui -->
+            </div>
+            <div class="flex justify-end gap-3">
+                <button onclick="closeSettlementModal()" class="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg hover:bg-gray-400">Annulla</button>
+                <button onclick="confirmSettlement()" class="bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700">Conferma</button>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Stato dell'applicazione
         let state = {
             people: [],
-            groups: [
-                { name: 'Spese condivise da tutti', members: [], isDefault: true }
-            ],
+            groups: [{ name: 'Spese condivise da tutti', members: [], isDefault: true }],
             transactions: [],
             currentScreen: 'people'
         };
 
-        // Funzioni di rendering
         function render() {
             renderPeople();
             renderGroups();
@@ -158,63 +187,39 @@
             updateSelectors();
         }
 
-        function renderPeople() {
-            const list = document.getElementById('people-list');
-            list.innerHTML = '';
-            if (state.people.length === 0) {
-                list.innerHTML = '<p class="text-gray-500">Nessuna persona aggiunta. Inizia da qui!</p>';
-            }
-            state.people.forEach(person => {
-                const div = document.createElement('div');
-                div.className = 'flex justify-between items-center bg-gray-50 p-3 rounded-lg';
-                div.innerHTML = `
-                    <span class="font-medium">${person}</span>
-                    <button onclick="removePerson('${person}')" class="text-red-500 hover:text-red-700 font-semibold">Rimuovi</button>
-                `;
-                list.appendChild(div);
-            });
-        }
-
-        function renderGroups() {
-            const list = document.getElementById('groups-list');
-            list.innerHTML = '';
-            state.groups.forEach(group => {
-                const div = document.createElement('div');
-                div.className = 'bg-gray-50 p-4 rounded-lg';
-                div.innerHTML = `
-                    <div class="flex justify-between items-start">
-                        <h3 class="text-lg font-bold text-gray-800">${group.name} ${group.isDefault ? '<span class="text-sm font-normal text-indigo-600">(Default)</span>' : ''}</h3>
-                        ${!group.isDefault ? `<button onclick="removeGroup('${group.name}')" class="text-red-500 hover:text-red-700 font-semibold">Rimuovi</button>` : ''}
-                    </div>
-                    <p class="text-gray-600 mt-2"><strong>Membri:</strong> ${group.members.join(', ')}</p>
-                `;
-                list.appendChild(div);
-            });
-        }
-
         function renderTransactions() {
             const list = document.getElementById('transactions-list');
             list.innerHTML = '';
-             if (state.transactions.length === 0) {
+            if (state.transactions.length === 0) {
                 list.innerHTML = '<p class="text-gray-500">Nessuna transazione registrata.</p>';
             }
             state.transactions.slice().reverse().forEach((tx, index) => {
+                const originalIndex = state.transactions.length - 1 - index;
                 const div = document.createElement('div');
-                div.className = 'flex justify-between items-center bg-gray-50 p-3 rounded-lg';
+                div.className = 'bg-gray-50 p-3 rounded-lg';
+                
+                let settledHtml = '';
+                if (tx.exclusions && tx.exclusions.length > 0) {
+                    settledHtml = `<p class="text-xs text-green-600 mt-1"><strong>Quote saldate:</strong> ${tx.exclusions.join(', ')}</p>`;
+                }
+
                 div.innerHTML = `
-                    <div>
-                        <p class="font-semibold">${tx.description} - <span class="text-indigo-600">${tx.amount.toFixed(2)} €</span></p>
-                        <p class="text-sm text-gray-500">Pagato da: ${tx.paidBy} | Gruppo: ${tx.groupName}</p>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="font-semibold">${tx.description} - <span class="text-indigo-600">${tx.amount.toFixed(2)} €</span></p>
+                            <p class="text-sm text-gray-500">Pagato da: ${tx.paidBy} | Gruppo: ${tx.groupName}</p>
+                            ${settledHtml}
+                        </div>
+                        <div class="flex gap-2 flex-shrink-0 ml-2">
+                             <button onclick="openSettlementModal(${originalIndex})" class="text-sm bg-green-100 text-green-800 font-semibold py-1 px-2 rounded-md hover:bg-green-200">Quota già saldata da...</button>
+                            <button onclick="removeTransaction(${originalIndex})" class="text-sm bg-red-100 text-red-800 font-semibold py-1 px-2 rounded-md hover:bg-red-200">Rimuovi</button>
+                        </div>
                     </div>
-                    <button onclick="removeTransaction(${state.transactions.length - 1 - index})" class="text-red-500 hover:text-red-700 font-semibold">Rimuovi</button>
                 `;
                 list.appendChild(div);
             });
         }
-
-        /*
-
-        */
+        
         function renderSummary() {
             const content = document.getElementById('summary-content');
             content.innerHTML = '';
@@ -225,9 +230,7 @@
             }
 
             const balances = {};
-            state.people.forEach(p => {
-                balances[p] = 0;
-            });
+            state.people.forEach(p => { balances[p] = 0; });
 
             state.transactions.forEach(tx => {
                 const payer = tx.paidBy;
@@ -235,12 +238,20 @@
                 const group = state.groups.find(g => g.name === tx.groupName);
                 if (!group || group.members.length === 0) return;
 
-                const share = amount / group.members.length;
-                
-                balances[payer] += amount;
+                // 1. Calcola la quota originale per tutti
+                const originalShare = amount / group.members.length;
 
+                // 2. Aggiungi il credito a chi ha pagato e il debito a tutti i membri originali
+                balances[payer] += amount;
                 group.members.forEach(member => {
-                    balances[member] -= share;
+                    balances[member] -= originalShare;
+                });
+
+                // 3. Annulla il debito per chi ha già saldato e trasferisci quel "pagamento" al pagatore originale
+                const exclusions = tx.exclusions || [];
+                exclusions.forEach(excludedPerson => {
+                    balances[excludedPerson] += originalShare; // Annulla il suo debito
+                    balances[payer] -= originalShare;         // Simula che il pagatore abbia ricevuto la quota
                 });
             });
 
@@ -251,34 +262,11 @@
             Object.entries(balances).forEach(([person, balance]) => {
                 const li = document.createElement('li');
                 li.className = `flex justify-between p-3 rounded-lg ${balance >= 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
-                li.innerHTML = `
-                    <span class="font-medium">${person}</span>
-                    <span class="font-bold">${balance.toFixed(2)} €</span>
-                `;
+                li.innerHTML = `<span class="font-medium">${person}</span><span class="font-bold">${balance.toFixed(2)} €</span>`;
                 balancesList.appendChild(li);
             });
             balancesDiv.appendChild(balancesList);
             content.appendChild(balancesDiv);
-
-            /*
-            Passaggio 2: Semplificare i Pagamenti (L'Algoritmo Intelligente)
-            
-            Ora abbiamo una lista di persone che devono dare soldi (i debitori, con saldo negativo) e una lista di persone che devono riceverne (i creditori, con saldo positivo).
-
-            Sarebbe complicato se ogni debitore dovesse pagare un pezzetto a ogni creditore. L'algoritmo, invece, trova il minor numero di pagamenti necessari per pareggiare i conti. Ecco come fa:
-
-            1. Crea due liste: una per i debitori e una per i creditori.
-
-            2. Inizia un ciclo: finché ci sono ancora persone in entrambe le liste, l'algoritmo:
-                - Prende il debitore che deve di più (es. Anna, -50 €) e il creditore che deve ricevere di più (es. Luca, +70 €).
-                - Calcola l'importo da trasferire, che è il valore più piccolo tra il debito e il credito. In questo caso, 50 €.
-                - Registra il pagamento: "Anna deve dare 50 € a Luca".
-                - Aggiorna i saldi: il debito di Anna diventa 0 € (-50 + 50) e il credito di Luca si riduce a +20 € (+70 - 50).
-                - Rimuove chi è a posto: Anna ha saldato il suo debito, quindi viene tolta dalla lista dei debitori. Luca deve ancora ricevere soldi, quindi rimane nella sua lista.
-
-            3. Ripete il ciclo: ora l'algoritmo prenderà il prossimo debitore più grande e lo farà pagare a Luca (che è ancora il creditore più grande) o a chiunque altro debba ricevere di più, e così via, finché una delle due liste non è vuota.
-
-            */
 
             const debtors = Object.entries(balances).filter(([,b]) => b < 0).map(([p, b]) => ({person: p, amount: b}));
             const creditors = Object.entries(balances).filter(([,b]) => b > 0).map(([p, b]) => ({person: p, amount: b}));
@@ -291,29 +279,17 @@
 
                 const debtor = debtors[0];
                 const creditor = creditors[0];
-                
                 const amountToTransfer = Math.min(-debtor.amount, creditor.amount);
 
-                if (amountToTransfer < 0.01) {
-                    debtors.shift();
-                    continue;
-                }
+                if (amountToTransfer < 0.01) { debtors.shift(); continue; }
 
-                settlements.push({
-                    from: debtor.person,
-                    to: creditor.person,
-                    amount: amountToTransfer
-                });
+                settlements.push({ from: debtor.person, to: creditor.person, amount: amountToTransfer });
 
                 debtor.amount += amountToTransfer;
                 creditor.amount -= amountToTransfer;
 
-                if (Math.abs(debtor.amount) < 0.01) {
-                    debtors.shift();
-                }
-                if (Math.abs(creditor.amount) < 0.01) {
-                    creditors.shift();
-                }
+                if (Math.abs(debtor.amount) < 0.01) { debtors.shift(); }
+                if (Math.abs(creditor.amount) < 0.01) { creditors.shift(); }
             }
             
             const settlementsDiv = document.createElement('div');
@@ -321,7 +297,6 @@
             if (settlements.length === 0) {
                 settlementsDiv.innerHTML += '<p class="text-gray-500">Tutti i conti sono in pari!</p>';
             } else {
-                settlementsDiv.innerHTML += '<p class="text-gray-500">Ottenuta la lista di chi deve ricevere soldi (creditori) e chi deve darne (debitori), un algoritmo intelligente calcola il minor numero di pagamenti necessari per saldare tutti i debiti, abbinando chi deve di più a chi deve ricevere di più, così da risolvere tutto nel modo più rapido e semplice.</p><br>';
                 const settlementsList = document.createElement('div');
                 settlementsList.className = 'space-y-3';
                 settlements.forEach(s => {
@@ -339,88 +314,7 @@
             }
             content.appendChild(settlementsDiv);
         }
-
-        function updateSelectors() {
-            const membersSelection = document.getElementById('group-members-selection');
-            membersSelection.innerHTML = '';
-            state.people.forEach(person => {
-                const div = document.createElement('div');
-                div.className = 'flex items-center';
-                div.innerHTML = `
-                    <input type="checkbox" id="member-${person}" name="group-members" value="${person}" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                    <label for="member-${person}" class="ml-2 block text-sm text-gray-900">${person}</label>
-                `;
-                membersSelection.appendChild(div);
-            });
-
-            const paidBySelect = document.getElementById('transaction-paid-by');
-            const groupSelect = document.getElementById('transaction-group');
-            paidBySelect.innerHTML = '<option value="" disabled selected>Chi ha pagato?</option>';
-            groupSelect.innerHTML = '';
-            
-            state.people.forEach(person => {
-                paidBySelect.innerHTML += `<option value="${person}">${person}</option>`;
-            });
-            state.groups.forEach(group => {
-                groupSelect.innerHTML += `<option value="${group.name}">${group.name}</option>`;
-            });
-        }
-
-        // Gestori di eventi
-        document.getElementById('add-person-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const input = document.getElementById('person-name');
-            const name = input.value.trim();
-            if (name && !state.people.includes(name)) {
-                state.people.push(name);
-                const defaultGroup = state.groups.find(g => g.isDefault);
-                if (defaultGroup) {
-                    defaultGroup.members.push(name);
-                }
-                input.value = '';
-                render();
-            } else if (state.people.includes(name)) {
-                alert('Questa persona esiste già.');
-            }
-        });
         
-        function removePerson(name) {
-            if (confirm(`Sei sicuro di voler rimuovere ${name}? Verrà rimosso/a da tutti i gruppi e le sue transazioni verranno eliminate.`)) {
-                state.people = state.people.filter(p => p !== name);
-                state.groups.forEach(g => {
-                    g.members = g.members.filter(m => m !== name);
-                });
-                state.transactions = state.transactions.filter(tx => tx.paidBy !== name);
-                render();
-            }
-        }
-
-        document.getElementById('add-group-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const input = document.getElementById('group-name');
-            const name = input.value.trim();
-            const selectedMembers = Array.from(document.querySelectorAll('input[name="group-members"]:checked')).map(cb => cb.value);
-
-            if (name && !state.groups.some(g => g.name === name) && selectedMembers.length > 0) {
-                state.groups.push({ name, members: selectedMembers, isDefault: false });
-                input.value = '';
-                document.querySelectorAll('input[name="group-members"]').forEach(cb => cb.checked = false);
-                render();
-            } else if (state.groups.some(g => g.name === name)) {
-                alert('Un gruppo con questo nome esiste già.');
-            } else if (selectedMembers.length === 0) {
-                alert('Seleziona almeno un membro per il gruppo.');
-            }
-        });
-
-        function removeGroup(name) {
-            if (confirm(`Sei sicuro di voler rimuovere il gruppo "${name}"? Le transazioni associate verranno eliminate.`)) {
-                state.groups = state.groups.filter(g => g.name !== name);
-                state.transactions = state.transactions.filter(tx => tx.groupName !== name);
-                render();
-            }
-        }
-
         document.getElementById('add-transaction-form').addEventListener('submit', (e) => {
             e.preventDefault();
             const description = document.getElementById('transaction-description').value.trim();
@@ -429,7 +323,7 @@
             const groupName = document.getElementById('transaction-group').value;
 
             if (description && amount > 0 && paidBy && groupName) {
-                state.transactions.push({ description, amount, paidBy, groupName });
+                state.transactions.push({ description, amount, paidBy, groupName, exclusions: [] });
                 e.target.reset();
                 render();
             } else {
@@ -437,26 +331,166 @@
             }
         });
 
+        // --- Funzioni Modal ---
+        const settlementModal = document.getElementById('settlement-modal');
+        
+        function openSettlementModal(txIndex) {
+            const tx = state.transactions[txIndex];
+            const group = state.groups.find(g => g.name === tx.groupName);
+            if (!group) return;
+
+            const membersList = document.getElementById('settlement-members-list');
+            membersList.innerHTML = '';
+            
+            const potentialSettlers = group.members.filter(m => m !== tx.paidBy && !(tx.exclusions || []).includes(m));
+
+            if (potentialSettlers.length === 0) {
+                alert('Tutte le quote per questa transazione sono già state saldate o non ci sono altri membri nel gruppo.');
+                return;
+            }
+
+            potentialSettlers.forEach(member => {
+                const div = document.createElement('div');
+                div.className = 'flex items-center';
+                div.innerHTML = `
+                    <input type="radio" id="settler-${member}" name="settler" value="${member}" class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                    <label for="settler-${member}" class="ml-3 block text-sm font-medium text-gray-700">${member}</label>
+                `;
+                membersList.appendChild(div);
+            });
+            
+            settlementModal.dataset.txIndex = txIndex;
+            settlementModal.classList.add('visible');
+        }
+
+        function closeSettlementModal() {
+            settlementModal.classList.remove('visible');
+        }
+
+        function confirmSettlement() {
+            const txIndex = settlementModal.dataset.txIndex;
+            const selectedSettler = document.querySelector('input[name="settler"]:checked');
+
+            if (!selectedSettler) {
+                alert('Per favore, seleziona una persona.');
+                return;
+            }
+
+            const person = selectedSettler.value;
+            const tx = state.transactions[txIndex];
+            
+            if (!tx.exclusions) {
+                tx.exclusions = [];
+            }
+            tx.exclusions.push(person);
+
+            closeSettlementModal();
+            render();
+        }
+
+        // --- Funzioni esistenti (non modificate o con piccole modifiche) ---
+        function renderPeople() {
+            const list = document.getElementById('people-list');
+            list.innerHTML = '';
+            if (state.people.length === 0) { list.innerHTML = '<p class="text-gray-500">Nessuna persona aggiunta. Inizia da qui!</p>'; }
+            state.people.forEach(person => {
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center bg-gray-50 p-3 rounded-lg';
+                div.innerHTML = `<span class="font-medium">${person}</span><button onclick="removePerson('${person}')" class="text-red-500 hover:text-red-700 font-semibold">Rimuovi</button>`;
+                list.appendChild(div);
+            });
+        }
+        function renderGroups() {
+            const list = document.getElementById('groups-list');
+            list.innerHTML = '';
+            state.groups.forEach(group => {
+                const div = document.createElement('div');
+                div.className = 'bg-gray-50 p-4 rounded-lg';
+                div.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <h3 class="text-lg font-bold text-gray-800">${group.name} ${group.isDefault ? '<span class="text-sm font-normal text-indigo-600">(Default)</span>' : ''}</h3>
+                        ${!group.isDefault ? `<button onclick="removeGroup('${group.name}')" class="text-red-500 hover:text-red-700 font-semibold">Rimuovi</button>` : ''}
+                    </div>
+                    <p class="text-gray-600 mt-2"><strong>Membri:</strong> ${group.members.join(', ')}</p>`;
+                list.appendChild(div);
+            });
+        }
+        function updateSelectors() {
+            const membersSelection = document.getElementById('group-members-selection');
+            membersSelection.innerHTML = '';
+            state.people.forEach(person => {
+                const div = document.createElement('div');
+                div.className = 'flex items-center';
+                div.innerHTML = `<input type="checkbox" id="member-${person}" name="group-members" value="${person}" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"><label for="member-${person}" class="ml-2 block text-sm text-gray-900">${person}</label>`;
+                membersSelection.appendChild(div);
+            });
+            const paidBySelect = document.getElementById('transaction-paid-by');
+            const groupSelect = document.getElementById('transaction-group');
+            paidBySelect.innerHTML = '<option value="" disabled selected>Chi ha pagato?</option>';
+            groupSelect.innerHTML = '';
+            state.people.forEach(person => { paidBySelect.innerHTML += `<option value="${person}">${person}</option>`; });
+            state.groups.forEach(group => { groupSelect.innerHTML += `<option value="${group.name}">${group.name}</option>`; });
+        }
+        document.getElementById('add-person-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const input = document.getElementById('person-name');
+            const name = input.value.trim();
+            if (name && !state.people.includes(name)) {
+                state.people.push(name);
+                const defaultGroup = state.groups.find(g => g.isDefault);
+                if (defaultGroup) { defaultGroup.members.push(name); }
+                input.value = '';
+                render();
+            } else if (state.people.includes(name)) { alert('Questa persona esiste già.'); }
+        });
+        function removePerson(name) {
+            if (confirm(`Sei sicuro di voler rimuovere ${name}? Verrà rimosso/a da tutti i gruppi e le sue transazioni verranno eliminate.`)) {
+                state.people = state.people.filter(p => p !== name);
+                state.groups.forEach(g => { g.members = g.members.filter(m => m !== name); });
+                state.transactions = state.transactions.filter(tx => tx.paidBy !== name);
+                // Rimuovi anche dalle esclusioni
+                state.transactions.forEach(tx => {
+                    if (tx.exclusions) {
+                        tx.exclusions = tx.exclusions.filter(ex => ex !== name);
+                    }
+                });
+                render();
+            }
+        }
+        document.getElementById('add-group-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const input = document.getElementById('group-name');
+            const name = input.value.trim();
+            const selectedMembers = Array.from(document.querySelectorAll('input[name="group-members"]:checked')).map(cb => cb.value);
+            if (name && !state.groups.some(g => g.name === name) && selectedMembers.length > 0) {
+                state.groups.push({ name, members: selectedMembers, isDefault: false });
+                input.value = '';
+                document.querySelectorAll('input[name="group-members"]').forEach(cb => cb.checked = false);
+                render();
+            } else if (state.groups.some(g => g.name === name)) { alert('Un gruppo con questo nome esiste già.'); } else if (selectedMembers.length === 0) { alert('Seleziona almeno un membro per il gruppo.'); }
+        });
+        function removeGroup(name) {
+            if (confirm(`Sei sicuro di voler rimuovere il gruppo "${name}"? Le transazioni associate verranno eliminate.`)) {
+                state.groups = state.groups.filter(g => g.name !== name);
+                state.transactions = state.transactions.filter(tx => tx.groupName !== name);
+                render();
+            }
+        }
         function removeTransaction(index) {
             if (confirm('Sei sicuro di voler rimuovere questa transazione?')) {
                 state.transactions.splice(index, 1);
                 render();
             }
         }
-
-        // Gestione navigazione
         function showScreen(screenName) {
             state.currentScreen = screenName;
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(`screen-${screenName}`).classList.add('active');
-            
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             document.getElementById(`nav-${screenName}`).classList.add('active');
         }
-
-        // Funzioni di Import/Export
         function exportData() {
-            const dataStr = JSON.stringify(state, null, 2); // Il 2 serve per formattare il JSON in modo leggibile
+            const dataStr = JSON.stringify(state, null, 2);
             const dataBlob = new Blob([dataStr], {type: "application/json"});
             const url = URL.createObjectURL(dataBlob);
             const link = document.createElement('a');
@@ -467,38 +501,28 @@
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
         }
-
         function importData(event) {
             const file = event.target.files[0];
-            if (!file) {
-                return;
-            }
-
+            if (!file) { return; }
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
                     const importedData = JSON.parse(e.target.result);
-                    // Validazione base del file importato
                     if (importedData.people && importedData.groups && importedData.transactions) {
                         if (confirm('Sei sicuro di voler importare questi dati? I dati attuali verranno sovrascritti.')) {
                             state = importedData;
                             render();
-                            showScreen('people'); // Torna alla prima schermata dopo l'import
+                            showScreen('people');
                         }
-                    } else {
-                        alert('Il file non sembra essere valido.');
-                    }
+                    } else { alert('Il file non sembra essere valido.'); }
                 } catch (error) {
                     alert('Errore durante la lettura del file. Assicurati che sia un file JSON valido.');
                     console.error("Errore di parsing JSON:", error);
                 }
             };
             reader.readAsText(file);
-            // Resetta il valore dell'input per permettere di ricaricare lo stesso file
             event.target.value = null;
         }
-
-        // Inizializzazione
         window.onload = () => {
             showScreen('people');
             render();
